@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 @router.get("/", response_model=List[schemas.PostOut])
-async def get_posts(
+def get_posts(
     db: Session = Depends(get_db),
     current_user: int = Depends(oauth2.get_current_user),
     limit: int = 10,
@@ -35,7 +35,7 @@ async def get_posts(
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
-async def create_posts(post : schemas.PostCreate, db: Session = Depends(get_db), current_user : int = Depends(oauth2.get_current_user)):
+def create_posts(post : schemas.PostCreate, db: Session = Depends(get_db), current_user : int = Depends(oauth2.get_current_user)):
     
     new_post =  models.Post(owner_id = current_user.id, **post.model_dump())
     print(current_user.email)
@@ -46,7 +46,7 @@ async def create_posts(post : schemas.PostCreate, db: Session = Depends(get_db),
 
 
 @router.get("/{id}", response_model=schemas.PostOut)
-async def get_post(id: int,db: Session = Depends(get_db),current_user : int = Depends(oauth2.get_current_user)):
+def get_post(id: int,db: Session = Depends(get_db),current_user : int = Depends(oauth2.get_current_user)):
     # post = db.query(models.Post).filter(models.Post.id == id).first()
     post = (
     db.query(models.Post, func.count(models.Vote.post_id).label("votes"))
@@ -83,7 +83,7 @@ def delete_post(id: int,db: Session = Depends(get_db),current_user : int = Depen
 
 
 @router.put("/{id}", response_model=schemas.Post)
-async def update_post(id: int, updated_post: schemas.PostCreate, db: Session = Depends(get_db),current_user : int = Depends(oauth2.get_current_user)):
+def update_post(id: int, updated_post: schemas.PostCreate, db: Session = Depends(get_db),current_user : int = Depends(oauth2.get_current_user)):
 
     post_query = db.query(models.Post).filter(models.Post.id == id)
     post = post_query.first()   # obiekt z bazy

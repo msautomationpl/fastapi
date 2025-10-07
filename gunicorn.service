@@ -1,0 +1,16 @@
+[Unit]
+Description=demo fastapi application
+After=network.target
+
+[Service]
+User=xxx
+Group=xxx
+WorkingDirectory=/home/xxx/Documents/pythonAPI
+Environment="PATH=/home/xxx/Documents/pythonAPI/venv/bin"
+# Usuń lub utwórz plik .env
+# EnvironmentFile=/home/xxx/Documents/pythonAPI/.env
+ExecStart=/home/xxx/Documents/pythonAPI/venv/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:8000
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
