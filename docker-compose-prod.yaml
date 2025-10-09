@@ -1,0 +1,98 @@
+
+
+services:
+  api:
+    image: msautomationpl/fastapi
+    depends_on:
+      - postgres
+      - redis
+      - mosquitto
+      - influxdb
+    ports:
+      - "80:8000"
+    
+    enviroment:
+      - DATABASE_HOSTNAME:${DATABASE_HOSTNAME}
+      - DATABASE_PORT:${DATABASE_PORT}
+      - DATABASE_USERNAME:${DATABASE_USERNAME}
+      - DATABASE_PASSWORD:${DATABASE_PASSWORD}
+      - DATABASE_NAME:${DATABASE_NAME}
+      - SECRET_KEY:${SECRET_KEY}
+      - ALGORITHM:${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES:${ACCESS_TOKEN_EXPIRE_MINUTES}
+
+    # command: uvicorn app.main:app --host 0.0.0.0 --port 8000 
+
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: $postgres
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: $docker_fastapi
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    restart: always
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-log:/mosquitto/log
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+
+  nginx:
+    image: nginx:latest
+    restart: always
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+  influxdb:
+    image: influxdb:latest
+    restart: always
+    ports:
+      - "8086:8086"
+    environment:
+      INFLUXDB_DB: bms
+      INFLUXDB_ADMIN_USER: admin
+      INFLUXDB_ADMIN_PASSWORD: admin123
+      INFLUXDB_USER: bmsuser
+      INFLUXDB_USER_PASSWORD: bms123
+    volumes:
+      - influxdb-data:/var/lib/influxdb
+
+  grafana:
+    image: grafana/grafana:latest
+    depends_on:
+      - influxdb
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+volumes:
+  postgres-db:
+  mosquitto-data:
+  mosquitto-log:
+  influxdb-data:
+  grafana-data:

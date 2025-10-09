@@ -1,0 +1,27 @@
+services:
+  api:
+    build: .
+    image: fastapi-app:latest
+    depends_on:
+      - postgres
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/usr/src/app:ro  
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload 
+    env_file:
+      - ./.env
+
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres         
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=docker_fastapi
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+
+volumes:
+  postgres-db:
+    name: postgres-db
