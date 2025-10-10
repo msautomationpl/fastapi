@@ -77,6 +77,7 @@ jobs:
       #     cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/fastapi_ci_cd:buildcache,mode=max
 
       - name : push changest to production
+        run: echo "deploying"
   deploy:
     needs: build
     runs-on: ubuntu-latest
