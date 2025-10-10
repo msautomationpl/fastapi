@@ -78,9 +78,8 @@ jobs:
 
       - name : push changest to production
   deploy:
-    runs-on:
-    needs: [build]
-
+    needs: build
+    runs-on: ubuntu-latest
     steps:
-      - name: deploying stuff
-        run: echo "depolying"
+      - name: Deploying stuff
+        run: echo "deploying"
