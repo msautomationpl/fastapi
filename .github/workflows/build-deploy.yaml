@@ -69,9 +69,9 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fastapi_ci_cd:latest
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi_ci_cd:latest
           
 
           # ✅ Cache z registry (Docker Hub)
-          cache-from: type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/fastapi_ci_cd:buildcache
-          cache-to: type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/fastapi_ci_cd:buildcache,mode=max
+          cache-from: type=registry,ref=${{ vars.DOCKER_HUB_USERNAME }}/fastapi_ci_cd:buildcache
+          cache-to: type=registry,ref=${{ vars.DOCKER_HUB_USERNAME }}/fastapi_ci_cd:buildcache,mode=max
